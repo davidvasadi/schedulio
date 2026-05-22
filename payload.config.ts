@@ -15,6 +15,11 @@ import { Bookings } from './src/payload/collections/Bookings'
 import { Availability } from './src/payload/collections/Availability'
 import { Media } from './src/payload/collections/Media'
 import { Subscriptions } from './src/payload/collections/Subscriptions'
+import { Restaurants } from './src/payload/collections/Restaurants'
+import { Rooms } from './src/payload/collections/Rooms'
+import { Tables } from './src/payload/collections/Tables'
+import { OpeningHours } from './src/payload/collections/OpeningHours'
+import { Reservations } from './src/payload/collections/Reservations'
 
 export default buildConfig({
   admin: {
@@ -39,13 +44,23 @@ export default buildConfig({
     Availability,
     Media,
     Subscriptions,
+    Restaurants,
+    Rooms,
+    Tables,
+    OpeningHours,
+    Reservations,
   ],
   globals: [],
   editor: slateEditor({}),
   db: postgresAdapter({
+    // A Payload bulk-delete (több dokumentum egyszerre) párhuzamos query-ket futtat egy
+    // tranzakció-kapcsolaton, amit a node-postgres nem enged ("client is already executing
+    // a query") → a tranzakció megsérül és rollback-el (pl. admin user-törlés több elemen).
+    // A tranzakciók kikapcsolásával minden query saját kapcsolaton fut, így nincs ütközés.
+    transactionOptions: false,
     pool: {
       connectionString:
-        process.env.DATABASE_URI || 'postgresql://bookly:davelopment2026!@localhost:5432/bookly',
+        process.env.DATABASE_URI || 'postgresql://schedulio:davelopment2026!@localhost:5432/schedulio',
     },
   }),
   secret: process.env.PAYLOAD_SECRET || 'your-secret-key-here',
